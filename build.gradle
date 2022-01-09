@@ -23,10 +23,15 @@ dependencies {
     modImplementation files("./lib/KommandsLib-0.1.0-1.18.1.jar")
     include files("./lib/KommandsLib-0.1.0-1.18.1.jar")
 
+    implementation "com.github.DarkKronicle:Konstruct:${project.konstruct_version}"
     implementation 'com.electronwill.night-config:toml:3.6.5'
+    implementation "org.mariuszgromada.math:MathParser.org-mXparser:${project.mathparser_version}"
     // Transitive
     include 'com.electronwill.night-config:toml:3.6.5'
     include 'com.electronwill.night-config:core:3.6.5'
+    include "com.github.DarkKronicle:Konstruct:${project.konstruct_version}"
+    include "org.mariuszgromada.math:MathParser.org-mXparser:${project.mathparser_version}"
+//    include "com.github.DarkKronicle:Konstruct:addons:${project.konstruct_version}"
 }
 processResources {
     inputs.property "version", project.version

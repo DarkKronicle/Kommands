@@ -5,6 +5,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
+import io.github.darkkronicle.Konstruct.NodeProcessor;
 import io.github.darkkronicle.kommandlib.util.ArgumentTypes;
 import io.github.darkkronicle.kommandlib.util.CommandUtil;
 import io.github.darkkronicle.kommands.util.CommandConfigException;
@@ -14,7 +15,6 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 public class ArgumentNode<S, T extends ArgumentType<S>> extends Node {
@@ -63,20 +63,19 @@ public class ArgumentNode<S, T extends ArgumentType<S>> extends Node {
         if (string.isEmpty()) {
             throw new CommandConfigException("No name specified!", config);
         }
-        Identifier identifier = new Identifier((String) config.getOptional("type").orElse("brigadier:string"));
+        Identifier identifier = new Identifier((String) config.getOptional("type").orElse("string"));
         Optional<ArgumentTypes.Entry<Object, ArgumentType<Object>>> argumentType = ArgumentTypes.getInstance().get(identifier);
         if (argumentType.isEmpty()) {
-            throw new CommandConfigException("Invalid argument type!", config);
+            throw new CommandConfigException("Invalid argument type! " + identifier, config);
         }
         return new ArgumentNode<>(string.get(), argumentType.get(), (boolean) config.getOptional("required").orElse(false), (String) config.getOptional("default").orElse(""));
     }
 
-    public static String formatExecute(CommandContext<ServerCommandSource> source, List<ArgumentNode<?, ?>> arguments, String execute) {
+    public static void addVariables(CommandContext<ServerCommandSource> source, List<ArgumentNode<?, ?>> arguments, NodeProcessor processor) {
         for (ArgumentNode<?, ?> argument : arguments) {
             String replace = argument.getReplacement(source);
-            execute = execute.replaceAll(Pattern.quote("{" + argument.getName() + "}"), replace);
+            processor.addVariable(argument.getName(), replace);
         }
-        return execute;
     }
 
 }

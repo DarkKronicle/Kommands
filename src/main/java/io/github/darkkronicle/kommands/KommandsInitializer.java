@@ -11,6 +11,7 @@ public class KommandsInitializer implements IInitializationHandler {
 
     @Override
     public void registerModHandlers() {
+        KommandsManager.getInstance().setupProcessor();
         KommandsManager.getInstance().reload();
         CommandManager.getInstance().addCommand(
                 new BaseCommandInvoker(Kommands.MOD_ID,"kommands",

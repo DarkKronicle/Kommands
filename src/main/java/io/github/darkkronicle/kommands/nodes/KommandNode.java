@@ -5,8 +5,10 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
+import io.github.darkkronicle.Konstruct.NodeProcessor;
 import io.github.darkkronicle.kommandlib.command.CommandInvoker;
 import io.github.darkkronicle.kommandlib.util.CommandUtil;
+import io.github.darkkronicle.kommands.KommandsManager;
 import io.github.darkkronicle.kommands.executors.CommandExecute;
 import io.github.darkkronicle.kommands.executors.IExecute;
 import io.github.darkkronicle.kommands.util.CommandConfigException;
@@ -56,8 +58,10 @@ public class KommandNode extends Node {
         ArgumentBuilder<ServerCommandSource, ?> builder = CommandUtil.literal(name);
         CustomClientCommand command = new CustomClientCommand();
         Command<ServerCommandSource> runnable = context -> {
-                command.runCommand(context, executes);
-                return 0;
+            NodeProcessor processor = new NodeProcessor();
+            processor.addAll(KommandsManager.getInstance().getBaseProcessor());
+            command.runCommand(context, processor, executes);
+            return 0;
         };
         if (argumentNodes.size() > 0) {
             if (!argumentNodes.get(0).isRequired()) {
@@ -100,10 +104,10 @@ public class KommandNode extends Node {
                 argumentNodes.add(ArgumentNode.of(argumentConfig));
             }
         }
-        Optional<List<Config>> subcommands = config.getOptional("subcommands");
+        Optional<List<Config>> subcommands = config.getOptional("subcommand");
         if (subcommands.isPresent()) {
             for (Config subcommandConfig : subcommands.get()) {
-                argumentNodes.add(ArgumentNode.of(subcommandConfig));
+                children.add(KommandNode.of(subcommandConfig));
             }
         }
         return new KommandNode(name.get(), argumentNodes, children, onExecute);
