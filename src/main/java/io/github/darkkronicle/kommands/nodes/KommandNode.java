@@ -3,14 +3,12 @@ package io.github.darkkronicle.kommands.nodes;
 import com.electronwill.nightconfig.core.Config;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
-import io.github.darkkronicle.Konstruct.NodeProcessor;
-import io.github.darkkronicle.kommandlib.command.CommandInvoker;
+import io.github.darkkronicle.Konstruct.parser.NodeProcessor;
+import io.github.darkkronicle.Konstruct.reader.builder.NodeBuilder;
 import io.github.darkkronicle.kommandlib.util.CommandUtil;
 import io.github.darkkronicle.kommands.KommandsManager;
-import io.github.darkkronicle.kommands.executors.CommandExecute;
-import io.github.darkkronicle.kommands.executors.IExecute;
+import io.github.darkkronicle.kommands.executors.CommandFunction;
 import io.github.darkkronicle.kommands.util.CommandConfigException;
 import lombok.Getter;
 import net.minecraft.server.command.ServerCommandSource;
@@ -29,13 +27,13 @@ public class KommandNode extends Node {
     @Getter
     private final List<Node> children;
     @Getter
-    private final List<IExecute> executes;
+    private final io.github.darkkronicle.Konstruct.nodes.Node node;
 
-    public KommandNode(String name, List<ArgumentNode<?, ?>> argumentNodes, List<Node> children, List<IExecute> executes) {
+    public KommandNode(String name, List<ArgumentNode<?, ?>> argumentNodes, List<Node> children, io.github.darkkronicle.Konstruct.nodes.Node node) {
         this.name = name;
         this.argumentNodes = argumentNodes;
         this.children = children;
-        this.executes = executes;
+        this.node = node;
     }
 
     private CommandNode<ServerCommandSource> getArguments(CustomClientCommand command, Command<ServerCommandSource> runnable, ArgumentNode<?, ?>[] nodes) {
@@ -60,7 +58,7 @@ public class KommandNode extends Node {
         Command<ServerCommandSource> runnable = context -> {
             NodeProcessor processor = new NodeProcessor();
             processor.addAll(KommandsManager.getInstance().getBaseProcessor());
-            command.runCommand(context, processor, executes);
+            command.runCommand(context, processor, node);
             return 0;
         };
         if (argumentNodes.size() > 0) {
@@ -81,22 +79,16 @@ public class KommandNode extends Node {
     public static KommandNode of(Config config) {
         List<ArgumentNode<?, ?>> argumentNodes = new ArrayList<>();
         List<Node> children = new ArrayList<>();
-        List<IExecute> onExecute = new ArrayList<>();
         Optional<String> name = config.getOptional("name");
+        io.github.darkkronicle.Konstruct.nodes.Node node = null;
         if (name.isEmpty()) {
             throw new CommandConfigException("No name is specified!", config);
         }
-        Optional<List<Config>> executes = config.getOptional("executes");
-        if (executes.isEmpty()) {
+        Optional<String> execute = config.getOptional("execute");
+        if (execute.isEmpty()) {
             throw new CommandConfigException("No executes are specified!", config);
         }
-        for (Config executeConfig : executes.get()) {
-            if (executeConfig.getOptional("type").orElse("command").equals("command")) {
-                onExecute.add(new CommandExecute((String) executeConfig.getOptional("value").orElse("")));
-            } else {
-                throw new CommandConfigException("Invalid execute setup!", config);
-            }
-        }
+        node = new NodeBuilder(execute.get()).build();
 
         Optional<List<Config>> arguments = config.getOptional("arguments");
         if (arguments.isPresent()) {
@@ -110,6 +102,6 @@ public class KommandNode extends Node {
                 children.add(KommandNode.of(subcommandConfig));
             }
         }
-        return new KommandNode(name.get(), argumentNodes, children, onExecute);
+        return new KommandNode(name.get(), argumentNodes, children, node);
     }
 }

@@ -9,7 +9,11 @@ import io.github.darkkronicle.kommands.util.BasicCommandBuilder;
 import io.github.darkkronicle.kommands.util.TomlUtil;
 import lombok.Getter;
 import net.minecraft.server.command.ServerCommandSource;
+import org.apache.logging.log4j.Level;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +46,14 @@ public class CustomKommandsConfig {
     public void load() {
         unload();
         setConfigPaths();
+        if (configPaths.isEmpty()) {
+            try {
+                Files.copy(Kommands.getResource("sample_config.toml"), directory.resolve("sample_config.toml"));
+                setConfigPaths();
+            } catch (URISyntaxException | IOException e) {
+                Kommands.LOGGER.log(Level.WARN, "Error copying default config!", e);
+            }
+        }
         for (Path path : configPaths) {
             setupPath(path);
         }

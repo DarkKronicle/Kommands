@@ -1,8 +1,8 @@
 package io.github.darkkronicle.kommands.nodes;
 
 import com.mojang.brigadier.context.CommandContext;
-import io.github.darkkronicle.Konstruct.NodeProcessor;
-import io.github.darkkronicle.kommands.executors.IExecute;
+import io.github.darkkronicle.Konstruct.nodes.Node;
+import io.github.darkkronicle.Konstruct.parser.NodeProcessor;
 import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.ArrayList;
@@ -16,11 +16,9 @@ public class CustomClientCommand {
         arguments.add(node);
     }
 
-    public void runCommand(CommandContext<ServerCommandSource> commandContext, NodeProcessor processor, List<IExecute> executes) {
+    public void runCommand(CommandContext<ServerCommandSource> commandContext, NodeProcessor processor, Node node) {
         ArgumentNode.addVariables(commandContext, arguments, processor);
-        for (IExecute execute : executes) {
-            execute.execute(processor);
-        }
+        processor.parse(node);
     }
 
 }

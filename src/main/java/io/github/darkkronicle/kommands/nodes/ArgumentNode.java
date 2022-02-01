@@ -5,7 +5,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
-import io.github.darkkronicle.Konstruct.NodeProcessor;
+import io.github.darkkronicle.Konstruct.parser.NodeProcessor;
 import io.github.darkkronicle.kommandlib.util.ArgumentTypes;
 import io.github.darkkronicle.kommandlib.util.CommandUtil;
 import io.github.darkkronicle.kommands.util.CommandConfigException;

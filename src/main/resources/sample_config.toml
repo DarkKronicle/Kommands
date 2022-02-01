@@ -1,0 +1,36 @@
+# Welcome to Kommands!
+#
+# At any point use '/kommands reload' to apply changes made from this file.
+# Any file within this directory that ends with .toml will be loaded and parsed for kommands.
+# Toml guide https://toml.io/en/latest
+
+[[command]]
+    # Command name. Cannot contain spaces
+    name = "calc"
+
+    # Any amount of arguments. Specify type will determine what will be allowed by the mod.
+    # Name can be referenced by variable in 'execute', can be required or not, and have a default value
+    arguments = [
+        {type = "greedy", name = "expression", required = true}
+    ]
+
+    # Execute is a Konstruct expression. https://darkkronicle.github.io/Konstruct/quickstart.html
+    execute = "toChat('§7' + expression + ' = ' + calc(expression))"
+
+[[command]]
+    name = "up"
+    arguments = [
+        {type = "brigadier:integer", name = "amount", default = "1", required = false},
+        {type = "block_state", name = "blockType", default = "glass", required = false}
+    ]
+    execute = "toCommand('/tp @p ~ ~' + amount + ' ~'); toCommand('/setblock ~ ~-1 ~ ' + blockType)"
+
+[[command]]
+    name = "relfill"
+    arguments = [
+        {type = "brigadier:integer", name = "size", required = true},
+        {type = "block_state", name = "blockType", default = "glass", required = false}
+    ]
+    execute = '''toCommand(
+        '/fill ~-' + size + ' ~-' + size + ' ~-' + size + ' ~' + size + ' ~' + size + ' ' + blockType
+    )'''
