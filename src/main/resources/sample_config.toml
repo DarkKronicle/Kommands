@@ -1,5 +1,5 @@
 # Welcome to Kommands!
-#
+
 # At any point use '/kommands reload' to apply changes made from this file.
 # Any file within this directory that ends with .toml will be loaded and parsed for kommands.
 # Toml guide https://toml.io/en/latest
@@ -10,6 +10,7 @@
 
     # Any amount of arguments. Specify type will determine what will be allowed by the mod.
     # Name can be referenced by variable in 'execute', can be required or not, and have a default value
+    # Look at https://github.com/DarkKronicle/Kommands/wiki/Arguments for more information on arguments
     arguments = [
         {type = "greedy", name = "expression", required = true}
     ]
