@@ -35,3 +35,23 @@
     execute = '''toCommand(
         '/fill ~-' + size + ' ~-' + size + ' ~-' + size + ' ~' + size + ' ~' + size + ' ' + blockType
     )'''
+
+[[command]]
+    name = "portalcoords"
+    arguments = [
+        {type = "brigadier:integer", name = "xCoord", required = false, default = "unset"},
+        {type = "brigadier:integer", name = "zCoord", required = false, default = "unset"},
+    ]
+    execute = '''
+        if (xCoord == 'unset') {
+            xVal = x;
+        } else {
+            xVal = round(xCoord, 5);
+        };
+        if (zCoord == 'unset') {
+            zVal = z;
+        } else {
+            zVal = round(zCoord, 5);
+        };
+        toChat('§7X: ' + round((xVal / 8), 2) + ' Z: ' + round((z / 8), 2))
+    '''
